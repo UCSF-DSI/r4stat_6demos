@@ -1,0 +1,74 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(lmtest)
+library
+```
+
+```{r}
+# hrs_df <- read_csv("hrs_analyze.csv") %>%
+#   select(female, age_2014, depress_dx, bp_dx) %>%
+#   drop_na()
+hrs_df <- read_csv("hrs_analyze.csv") %>%
+  select(female, age_2014, depress_dx, bp_dx)
+hrs_df
+```
+
+```{r}
+hrs_df %>%
+  mutate(bp_dx = factor(bp_dx), depress_dx = factor(depress_dx)) %>%
+  group_by(depress_dx, bp_dx) %>%
+  summarize(count = n()) %>%
+  ggplot() +
+    geom_bar(aes(x = depress_dx, y = count, fill = bp_dx), stat = "identity", position = "fill")
+```
+
+```{r}
+depress_dx_fit <- glm(depress_dx ~ bp_dx, data = hrs_df, family=binomial)
+depress_dx_fit
+```
+
+```{r}
+depress_dx_fit %>% summary()
+```
+
+```{r}
+depress_dx_fit %>% coefficients() %>% exp()
+```
+
+```{r}
+depress_dx_multi_fit <- glm(depress_dx ~ bp_dx + age_2014 + female, data = hrs_df, family=binomial)
+depress_dx_multi_fit
+```
+
+```{r}
+depress_dx_multi_fit %>% summary()
+```
+
+```{r}
+lrtest(depress_dx_fit, depress_dx_multi_fit)
+```
+
+```{r}
+depress_dx_multi_fit %>% vif()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
